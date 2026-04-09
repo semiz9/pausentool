@@ -1,13 +1,11 @@
 {
-  "name": "pausentool-backend",
-  "version": "1.0.0",
+  "name": "pausentool",
+  "version": "2.0.0",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
   "dependencies": {
-    "express": "^4.21.2",
-    "socket.io": "^4.8.1",
-    "sqlite3": "^5.1.7"
+    "express": "^4.21.2"
   }
 }
