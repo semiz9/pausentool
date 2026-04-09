@@ -16,17 +16,21 @@ app.use(express.static(path.join(__dirname, 'public')));
 const slots = Array.from({ length: NUM_SLOTS }, (_, i) => ({
   id: i + 1, status: 'free', agent_name: null, start_time: null, end_time: null,
 }));
+const pauseLog = [];
+let logIdCounter = 1;
 
 function autoReleaseExpired() {
   const now = new Date();
   slots.forEach(slot => {
     if (slot.status === 'occ' && slot.end_time && new Date(slot.end_time) <= now) {
+      const entry = pauseLog.find(e => e.slot_id === slot.id && e.active);
+      if (entry) { entry.end_time = now.toISOString(); entry.active = false; }
       slot.status = 'free'; slot.agent_name = null; slot.start_time = null; slot.end_time = null;
     }
   });
 }
 
-function getState() { autoReleaseExpired(); return { slots }; }
+function getState() { autoReleaseExpired(); return { slots, log: pauseLog }; }
 function broadcastState() { io.emit('state:update', getState()); }
 
 app.get('/api/state', (req, res) => res.json(getState()));
@@ -43,13 +47,17 @@ app.post('/api/pause/start', (req, res) => {
   const start = new Date();
   const end = new Date(start.getTime() + Number(durationMinutes) * 60000);
   slot.status = 'occ'; slot.agent_name = agentName; slot.start_time = start.toISOString(); slot.end_time = end.toISOString();
+  pauseLog.unshift({ id: logIdCounter++, agent_name: agentName, slot_id: Number(slotId), start_time: start.toISOString(), end_time: end.toISOString(), active: true, forced: false });
+  if (pauseLog.length > 50) pauseLog.splice(50);
   broadcastState();
   res.json({ ok: true });
 });
 app.post('/api/pause/end', (req, res) => {
-  const { slotId } = req.body || {};
+  const { slotId, forced = false } = req.body || {};
   const slot = slots.find(s => s.id === Number(slotId));
   if (!slot || slot.status !== 'occ') return res.status(404).json({ error: 'Aktive Pause nicht gefunden' });
+  const entry = pauseLog.find(e => e.slot_id === Number(slotId) && e.active);
+  if (entry) { entry.end_time = new Date().toISOString(); entry.active = false; entry.forced = !!forced; }
   slot.status = 'free'; slot.agent_name = null; slot.start_time = null; slot.end_time = null;
   broadcastState();
   res.json({ ok: true });
