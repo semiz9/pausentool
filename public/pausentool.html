@@ -42,8 +42,8 @@
 <main class="main" id="mainArea">
   <div class="dept-bar">
     <div class="dept-tabs">
-      <button class="dept-tab" id="tab-b2b" onclick="setTop('b2b')">B2B</button>
       <button class="dept-tab" id="tab-b2c" onclick="setTop('b2c')">B2C</button>
+      <button class="dept-tab" id="tab-b2b" onclick="setTop('b2b')">B2B</button>
     </div>
     <div class="sub-tabs" id="subTabs">
       <button class="sub-tab" id="tab-b2c-line" onclick="setDept('b2c-line')">Line</button>
@@ -58,7 +58,7 @@
 <div class="overlay" id="overlay" role="dialog" aria-modal="true"><div class="modal"><div id="mBody"></div></div></div>
 <div class="toast" id="toast"></div>
 <script>
-let allDepts={}; let activeDept='b2b-line'; let activeTop='b2b'; let isAdmin=false; let adminDepts=[]; let tmpSlot=null; let tmpDur=null; const socket=io();
+let allDepts={}; let activeDept='b2c-line'; let activeTop='b2c'; let isAdmin=false; let adminDepts=[]; let tmpSlot=null; let tmpDur=null; const socket=io();
 (function(){const s=localStorage.getItem('pt_dept');if(s&&['b2b-line','b2c-line','b2c-chat'].includes(s)){activeDept=s;activeTop=s.startsWith('b2c')?'b2c':'b2b'}})();
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
 function fmtDT(d){if(!d)return '<span style="color:var(--faint)">—</span>';const x=new Date(d);return x.toLocaleDateString('de-AT',{day:'2-digit',month:'2-digit',year:'numeric'})+' '+x.toLocaleTimeString('de-AT',{hour:'2-digit',minute:'2-digit',second:'2-digit'})}
