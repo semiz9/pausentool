@@ -5,6 +5,7 @@ const { Server } = require('socket.io');
 
 const PORT = process.env.PORT || 3000;
 const ADMINS = [
+  { password: process.env.ADMIN_PASSWORD || 'admin2026', depts: ['b2b-line', 'b2c-line', 'b2c-chat'] },
   { password: process.env.B2B_ADMIN_PASSWORD || 'b2b2026', depts: ['b2b-line'] },
   { password: process.env.B2C_ADMIN_PASSWORD || 'b2c2026', depts: ['b2c-line', 'b2c-chat'] },
 ];
